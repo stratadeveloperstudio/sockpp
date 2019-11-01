@@ -52,6 +52,8 @@
 #include <memory>
 #include <string>
 
+#include <functional>
+
 struct mbedtls_pk_context;
 struct mbedtls_ssl_config;
 struct mbedtls_x509_crt;
