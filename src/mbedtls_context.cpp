@@ -659,6 +659,7 @@ namespace sockpp {
                 return "";
             }
             certs.write(pCertPEM, pCertPEMSize);
+            free(pCertPEM);
         }
 
         CertCloseStore(hStore, CERT_CLOSE_STORE_FORCE_FLAG);
