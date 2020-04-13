@@ -51,6 +51,7 @@
 #include "sockpp/tls_socket.h"
 #include <memory>
 #include <string>
+#include <functional>
 
 struct mbedtls_pk_context;
 struct mbedtls_ssl_config;
@@ -94,12 +95,19 @@ namespace sockpp {
         using Logger = std::function<void(int level, const char *filename, int line, const char *message)>;
         void set_logger(int threshold, Logger);
 
+        /**
+         * TLS "fatal alert" codes are mapped into error codes returned from the socket's last_error().
+         * This mapping is done in mbedTLS style: a value of -0xF0xx, where xx is the hex value of the alert.
+         * For example, MBEDTLS_SSL_ALERT_MSG_ACCESS_DENIED (49) is mapped to error code -0xF031.
+         */
+        static constexpr int FATAL_ERROR_ALERT_BASE = -0xF000;
+
     private:
         struct cert;
         struct key;
 
         int verify_callback(mbedtls_x509_crt *crt, int depth, uint32_t *flags);
-        static std::unique_ptr<cert> parse_cert(const std::string &cert_data);
+        static std::unique_ptr<cert> parse_cert(const std::string &cert_data, bool partialOk);
 
         std::unique_ptr<mbedtls_ssl_config> ssl_config_;
         std::unique_ptr<cert> root_certs_;
